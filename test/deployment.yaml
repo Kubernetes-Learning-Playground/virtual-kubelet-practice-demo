@@ -1,0 +1,22 @@
+# 测试在自定义节点上的实例
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: critest
+spec:
+  selector:
+    matchLabels:
+      app: critest
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: critest
+    spec:
+      nodeName: edgenode    # 调度到此自定义节点上
+      containers:
+        - name: ngx1
+          image: nginx:1.18-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
