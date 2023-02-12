@@ -50,3 +50,7 @@ INFO[0000] Event(v1.ObjectReference{Kind:"Pod", Namespace:"default", Name:"crite
 [root@VM-0-8-centos test]# kubectl get pods | grep critest
 critest-857b8c5576-d5dph               1/1     Running       0                27s
 ```
+
+RoadMap:
+1. 对接etcd or redis，让在边缘节点的请求能得到缓存记录
+2. 长期来看，需要对接containerd 或 docker 来真正实现创建容器与pod的逻辑(不会，太难了)
