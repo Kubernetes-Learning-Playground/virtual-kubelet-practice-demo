@@ -5,8 +5,8 @@ Virtual-Kubelet是基于Kubelet的典型特性实现，向上伪装成Kubelet，
 本项目基于Virtual-Kubelet的基础上，运行简易的自定义kubelet，并实现上报pod信息等功能。
 (由于是初探，功能完全不完善，没有任何业务逻辑，仅仅是启动项目而已，供自己学习所用)
 
-virtual-kubelet项目图提供(项目地址:https://github.com/virtual-kubelet/virtual-kubelet)
-
+virtual-kubelet项目图提供 [virtual-kubelet项目地址](https://github.com/virtual-kubelet/virtual-kubelet)
+![](https://github.com/googs1025/virtual-kubelet-practice-demo/blob/main/image/diagram.svg?raw=true)
 
 ### 项目启动步骤
 机器a为主节点，上有k8s集群，机器b为边缘节点，需要使用virtual-kubelet加入集群中。
