@@ -1,0 +1,9 @@
+metadata:
+   name: mysanbox
+   namespace: default
+log_directory: "/root/temp"
+port_mappings:
+   - protocol: 0
+     container_port: 80
+
+# 沙箱配置

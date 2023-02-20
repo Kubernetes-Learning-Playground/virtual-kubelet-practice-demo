@@ -21,6 +21,8 @@ func createPod(pod *v1.Pod)  {
 }
 
 
+
+
 func init() {
 	TempPods = make([]*v1.Pod, 0)
 }

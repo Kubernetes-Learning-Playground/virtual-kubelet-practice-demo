@@ -1,0 +1,23 @@
+# 测试在自定义节点上的实例
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: busybox1
+spec:
+  selector:
+    matchLabels:
+      app: busybox1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: busybox1
+    spec:
+      nodeName: edgenode    # 调度到此自定义节点上
+      containers:
+        - name: busybox1
+          image: busybox
+          command: ["top"]
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80

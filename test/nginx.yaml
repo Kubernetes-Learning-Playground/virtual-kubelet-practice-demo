@@ -1,0 +1,5 @@
+metadata:
+  name: myngx
+image:
+  image: docker.io/nginx:1.18-alpine
+log_path: ngx.log
