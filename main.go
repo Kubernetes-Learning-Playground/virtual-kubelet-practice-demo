@@ -17,7 +17,7 @@ import (
 
 func main() {
 
-	providers.InitClient()
+	common.InitClient()
 
 	_, cancel := context.WithCancel(context.Background())
 	sig := make(chan os.Signal, 1)
