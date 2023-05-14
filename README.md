@@ -8,6 +8,62 @@ Virtual-Kubelet是基于Kubelet的典型特性实现，向上伪装成Kubelet，
 virtual-kubelet项目图提供 [virtual-kubelet项目地址](https://github.com/virtual-kubelet/virtual-kubelet)
 ![](https://github.com/googs1025/virtual-kubelet-practice-demo/blob/main/image/diagram.svg?raw=true)
 
+### demo接口实现
+virtual kubelet提供一个插件式的provider接口，让开发者可以自定义实现传统kubelet的功能。
+
+自定义的provider可以用自己的配置文件和环境参数。
+自定义的provider必须提供以下功能：
+- 提供pod、容器、资源的生命周期管理的功能
+- 符合virtual kubelet提供的API
+```go
+// PodLifecycleHandler是被PodController来调用，来管理被分配到node上的pod。
+type PodLifecycleHandler interface {
+    // CreatePod takes a Kubernetes Pod and deploys it within the provider.
+    CreatePod(ctx context.Context, pod *corev1.Pod) error
+
+    // UpdatePod takes a Kubernetes Pod and updates it within the provider.
+    UpdatePod(ctx context.Context, pod *corev1.Pod) error
+
+    // DeletePod takes a Kubernetes Pod and deletes it from the provider.
+    DeletePod(ctx context.Context, pod *corev1.Pod) error
+
+    // GetPod retrieves a pod by name from the provider (can be cached).
+    // The Pod returned is expected to be immutable, and may be accessed
+    // concurrently outside of the calling goroutine. Therefore it is recommended
+    // to return a version after DeepCopy.
+    GetPod(ctx context.Context, namespace, name string) (*corev1.Pod, error)
+
+    // GetPodStatus retrieves the status of a pod by name from the provider.
+    // The PodStatus returned is expected to be immutable, and may be accessed
+    // concurrently outside of the calling goroutine. Therefore it is recommended
+    // to return a version after DeepCopy.
+    GetPodStatus(ctx context.Context, namespace, name string) (*corev1.PodStatus, error)
+
+    // GetPods retrieves a list of all pods running on the provider (can be cached).
+    // The Pods returned are expected to be immutable, and may be accessed
+    // concurrently outside of the calling goroutine. Therefore it is recommended
+    // to return a version after DeepCopy.
+    GetPods(context.Context) ([]*corev1.Pod, error)
+}
+
+// PodNotifier是可选实现，该接口主要用来通知virtual kubelet的pod状态变化。
+// 如果没有实现该接口，virtual-kubelet会定期检查所有pod的状态。
+// PodNotifier is used as an extension to PodLifecycleHandler to support async updates of pod statuses.
+type PodNotifier interface {
+    // NotifyPods instructs the notifier to call the passed in function when
+    // the pod status changes. It should be called when a pod's status changes.
+    //
+    // The provided pointer to a Pod is guaranteed to be used in a read-only
+    // fashion. The provided pod's PodStatus should be up to date when
+    // this function is called.
+    //
+    // NotifyPods must not block the caller since it is only used to register the callback.
+    // The callback passed into `NotifyPods` may block when called.
+    NotifyPods(context.Context, func(*corev1.Pod))
+}
+
+```
+
 ### 项目启动步骤
 机器a为主节点，上有k8s集群，机器b为边缘节点，需要使用virtual-kubelet加入集群中。
 1. 需要先准备两台连通网的机器，其中一台需要先安装kubeadm k8s v1.22.0(机器a)。

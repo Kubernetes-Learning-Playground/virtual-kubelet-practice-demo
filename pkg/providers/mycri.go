@@ -20,14 +20,14 @@ type CriProvider struct {
 	EndpointPort 	int32 // 默认端口 10250
 }
 
+// 是否实现下列两种接口，这是vk组件必须实现的两个接口。
+var _ node.PodLifecycleHandler = &CriProvider{}
+var _ node.PodNotifier = &CriProvider{}
 
 func NewCriProvider(OS string, endpoint int32) *CriProvider {
 	return &CriProvider{OS: OS, EndpointPort: endpoint}
 }
 
-// 是否实现下列两种接口。
-var _ node.PodLifecycleHandler = &CriProvider{}
-var _ node.PodNotifier = &CriProvider{}
 
 
 // NotifyPods 异步更新pod的状态。
