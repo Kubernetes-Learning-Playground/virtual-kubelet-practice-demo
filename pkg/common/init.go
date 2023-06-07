@@ -11,19 +11,17 @@ import (
 
 const CriAddr = "unix:///run/containerd/containerd.sock" //写死
 
-
-
-func NewRuntimeService() v1alpha2.RuntimeServiceClient  {
+func NewRuntimeService() v1alpha2.RuntimeServiceClient {
 	return v1alpha2.NewRuntimeServiceClient(grpcClient)
 }
 
-func NewImageService() v1alpha2.ImageServiceClient{
+func NewImageService() v1alpha2.ImageServiceClient {
 	return v1alpha2.NewImageServiceClient(grpcClient)
 }
 
-var grpcClient  *grpc.ClientConn  // grpc连接
+var grpcClient *grpc.ClientConn // grpc连接
 
-func InitClient()  {
+func InitClient() {
 	grpcOpts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}

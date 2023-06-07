@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: virtual-kubelet
+  name: virtual-kubelet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: virtual-kubelet
+  template:
+    metadata:
+      labels:
+        app: virtual-kubelet
+    spec:
+      automountServiceAccountToken: true
+      serviceAccount: virtual-kubelet-sa
+      containers:
+      - image: virtual-kubelet:v1
+        name: virtual-kubelet
+        args:
+          # 服务配置项
+          - --provider=example-provider  # 分布式锁名，kubectl命令可以看到
+          - --nodename=edgenode        # 是否启动选主模式
+          - --kubeconfig=./config/config.yaml

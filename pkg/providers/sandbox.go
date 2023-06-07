@@ -20,9 +20,8 @@ func CreateSandbox(pod *v1.Pod) (string, error) {
 
 	config1.Metadata.Namespace = pod.Namespace
 	config1.Metadata.Name = pod.Name
-	config1.LogDirectory =  "/root/temp"
+	config1.LogDirectory = "/root/temp"
 	//config1.PortMappings[0].ContainerPort = pod.Spec.Containers[0].Ports[0].ContainerPort
-
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
