@@ -1,6 +1,6 @@
 metadata:
-   name: mysanbox
-   namespace: default
+   name: mysanbox     # 沙箱名，
+   namespace: default # namespace空间
 log_directory: "/root/temp"
 port_mappings:
    - protocol: 0

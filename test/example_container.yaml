@@ -1,5 +1,5 @@
 metadata:
-  name: myngx
+  name: myngx                         # 容器名
 image:
-  image: docker.io/nginx:1.18-alpine
+  image: docker.io/nginx:1.18-alpine  # 容器镜像
 log_path: ngx.log

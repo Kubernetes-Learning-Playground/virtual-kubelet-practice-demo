@@ -12,6 +12,7 @@ import (
 // 模拟存储一个pod结合
 var TempPods []*v1.Pod
 
+// TODO: 使用PodManager管理pod状态
 type PodManager struct {
 	pods map[string]*corev1.Pod
 }

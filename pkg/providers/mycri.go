@@ -4,14 +4,11 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"os"
 	"time"
 
+	"github.com/practice/virtual-kubelet-practice/pkg/common"
 	"github.com/virtual-kubelet/virtual-kubelet/node"
 	"github.com/virtual-kubelet/virtual-kubelet/node/api"
-	"golanglearning/new_project/virtual-kubelet-practice/pkg/common"
-	"gopkg.in/yaml.v2"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/klog"
 )
@@ -115,32 +112,4 @@ func (c CriProvider) ConfigureNode(ctx context.Context, node *v1.Node) {
 	node.Status.Addresses = nodeAddresses(c.options.InternalIp)
 	node.Status.DaemonEndpoints = nodeDaemonEndpoints(c.options.DaemonEndpointPort)
 	node.Status.NodeInfo.OperatingSystem = c.options.OperatingSystem
-}
-
-// YamlFile2Struct 读取文件内容 且反序列为struct
-func YamlFile2Struct(path string, obj interface{}) error {
-	b, err := GetFileContent(path)
-	if err != nil {
-		klog.Error("开启文件错误：", err)
-		return err
-	}
-	err = yaml.Unmarshal(b, obj)
-	if err != nil {
-		klog.Error("解析yaml文件错误：", err)
-		return err
-	}
-	return nil
-}
-
-// GetFileContent 文件读取函数
-func GetFileContent(path string) ([]byte, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	b, err := ioutil.ReadAll(f)
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
 }

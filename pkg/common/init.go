@@ -9,11 +9,13 @@ import (
 	"time"
 )
 
-const CriAddr = "unix:///run/containerd/containerd.sock" //写死
+const CriAddr = "unix:///run/containerd/containerd.sock"
 
 func NewRuntimeService() v1alpha2.RuntimeServiceClient {
 	return v1alpha2.NewRuntimeServiceClient(grpcClient)
 }
+
+// TODO: 拉镜像查镜像都使用
 
 func NewImageService() v1alpha2.ImageServiceClient {
 	return v1alpha2.NewImageServiceClient(grpcClient)

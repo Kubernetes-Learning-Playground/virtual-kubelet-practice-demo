@@ -2,14 +2,14 @@ package main
 
 import (
 	"context"
+	"github.com/practice/virtual-kubelet-practice/pkg/common"
+	"github.com/practice/virtual-kubelet-practice/pkg/providers"
 	"github.com/sirupsen/logrus"
 	cli "github.com/virtual-kubelet/node-cli"
 	logruscli "github.com/virtual-kubelet/node-cli/logrus"
 	"github.com/virtual-kubelet/node-cli/provider"
 	"github.com/virtual-kubelet/virtual-kubelet/log"
 	logruslogger "github.com/virtual-kubelet/virtual-kubelet/log/logrus"
-	"golanglearning/new_project/virtual-kubelet-practice/pkg/common"
-	"golanglearning/new_project/virtual-kubelet-practice/pkg/providers"
 	"os"
 	"os/signal"
 	"syscall"
