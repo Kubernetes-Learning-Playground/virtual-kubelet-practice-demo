@@ -11,11 +11,11 @@ import (
 )
 
 // TODO: 删除沙箱
-func DeleteContainer() {
+func (r *RemoteCRIContainer) DeleteSandbox() {
 
 }
 
-func CreateSandbox(pod *v1.Pod) (string, error) {
+func (r *RemoteCRIContainer) CreateSandbox(pod *v1.Pod) (string, error) {
 	config1 := &v1alpha2.PodSandboxConfig{}
 	err := helper.YamlFile2Struct("./test/example_sandbox.yaml", config1)
 	klog.Info(config1)

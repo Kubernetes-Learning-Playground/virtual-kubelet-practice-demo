@@ -15,27 +15,32 @@ import (
 
 // CriProvider 对象
 type CriProvider struct {
+	// options 配置
 	options *common.ProviderOption
+	// cri客户端
+	remoteCRI *RemoteCRIContainer
 }
 
 // 是否实现下列两种接口，这是vk组件必须实现的两个接口。
 var _ node.PodLifecycleHandler = &CriProvider{}
 var _ node.PodNotifier = &CriProvider{}
 
-func NewCriProvider(options *common.ProviderOption) *CriProvider {
+func NewCriProvider(options *common.ProviderOption, criClient *RemoteCRIContainer) *CriProvider {
 	c := &CriProvider{
 		options: options,
+		remoteCRI: criClient,
 	}
 	return c
 }
 
 // NotifyPods 异步更新pod的状态。
 // 需要实现 node.PodNotifier 对象
+// TODO: 需要实现
 func (c CriProvider) NotifyPods(ctx context.Context, f func(*v1.Pod)) {
 	go func() {
 		for {
 			time.Sleep(time.Second * 3)
-			setPodsStatus() //临时代码
+			setPodsStatus()
 			for _, pod := range TempPods {
 				f(pod)
 			}
@@ -44,6 +49,7 @@ func (c CriProvider) NotifyPods(ctx context.Context, f func(*v1.Pod)) {
 }
 
 // CreatePod 创建pod的业务逻辑
+// TODO: 需要实现
 func (c CriProvider) CreatePod(ctx context.Context, pod *v1.Pod) error {
 	klog.Info("接收到来自k8s-apiserver的创建pod请求。")
 	klog.Info("在此节点上，可以自定义加入业务逻辑。ex: 放入redis or etcd 或是放入数据库等")
@@ -51,15 +57,15 @@ func (c CriProvider) CreatePod(ctx context.Context, pod *v1.Pod) error {
 	// TODO: 抽出一些函数出来
 	// TODO: 对接email，实现启动pod时，通知
 
-	PodSandboxId, err := CreateSandbox(pod)
+	PodSandboxId, err := c.remoteCRI.CreateSandbox(pod)
 	if err != nil {
-		klog.Error(err)
+		klog.Error("create remote cri sandbox err: ", err)
 		return nil
 	}
 
-	err = CreateContainer(pod, PodSandboxId)
+	err = c.remoteCRI.CreateContainer(pod, PodSandboxId)
 	if err != nil {
-		klog.Error(err)
+		klog.Error("create remote cri container err: ", err)
 		return nil
 	}
 
@@ -74,23 +80,26 @@ func (c CriProvider) UpdatePod(ctx context.Context, pod *v1.Pod) error {
 }
 
 // DeletePod 删除pod的业务逻辑
+// TODO: 需要实现
 func (c CriProvider) DeletePod(ctx context.Context, pod *v1.Pod) error {
 	klog.Info("pod被删除，名称是", pod.Name)
 	return nil
 }
 
 // 获取pod接口
-
+// TODO: 需要实现
 func (c CriProvider) GetPod(ctx context.Context, namespace, name string) (*v1.Pod, error) {
 	klog.Infof("获取pod信息: ", namespace, name)
 	return nil, nil
 }
 
+// TODO 需要实现
 func (c CriProvider) GetPodStatus(ctx context.Context, namespace, name string) (*v1.PodStatus, error) {
 	klog.Infof("获取pod状态status: ", name, namespace)
 	return nil, nil
 }
 
+// TODO 需要实现
 func (c CriProvider) GetPods(ctx context.Context) ([]*v1.Pod, error) {
 	return nil, nil
 }

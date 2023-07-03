@@ -10,12 +10,21 @@ import (
 	"time"
 )
 
-// TODO: 删除容器
-func DeleteContainer() {
-
+type RemoteCRIContainer struct {
+	RuntimeService v1alpha2.RuntimeServiceClient
+	ImageService   v1alpha2.ImageServiceClient
 }
 
-func CreateContainer(pod *v1.Pod, podSandboxId string) error {
+func NewRemoteCRIContainer(runtimeService v1alpha2.RuntimeServiceClient, imageService v1alpha2.ImageServiceClient) *RemoteCRIContainer {
+	return &RemoteCRIContainer{RuntimeService: runtimeService, ImageService: imageService}
+}
+
+// TODO: 删除容器
+func (r *RemoteCRIContainer) DeleteContainer() {
+	//
+}
+
+func (r *RemoteCRIContainer) CreateContainer(pod *v1.Pod, podSandboxId string) error {
 	podId := podSandboxId
 
 	config := &v1alpha2.ContainerConfig{}

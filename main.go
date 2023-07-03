@@ -42,6 +42,9 @@ func main() {
 
 	common.InitClient()
 
+	remoteCRI := providers.NewRemoteCRIContainer(common.R, common.I)
+
+
 	opt := common.ProviderOption{
 		ProviderName:       "example-provider",
 		NodeName:           "mynode",
@@ -81,7 +84,7 @@ func main() {
 	node, err := cli.New(ctx,
 
 		cli.WithProvider("example-provider", func(cfg provider.InitConfig) (provider.Provider, error) {
-			return providers.NewCriProvider(&opt), nil
+			return providers.NewCriProvider(&opt, remoteCRI), nil
 		}),
 		cli.WithKubernetesNodeVersion("v1.22.0"),
 		// Adds flags and parsing for using logrus as the configured logger

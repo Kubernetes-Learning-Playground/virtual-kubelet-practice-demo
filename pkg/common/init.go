@@ -11,6 +11,16 @@ import (
 
 const CriAddr = "unix:///run/containerd/containerd.sock"
 
+var (
+	R v1alpha2.RuntimeServiceClient
+	I v1alpha2.ImageServiceClient
+)
+
+func init() {
+	R = NewRuntimeService()
+	I = NewImageService()
+}
+
 func NewRuntimeService() v1alpha2.RuntimeServiceClient {
 	return v1alpha2.NewRuntimeServiceClient(grpcClient)
 }

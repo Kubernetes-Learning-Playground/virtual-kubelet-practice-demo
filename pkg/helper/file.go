@@ -15,7 +15,7 @@ func YamlFile2Struct(path string, obj interface{}) error {
 		klog.Error("开启文件错误：", err)
 		return err
 	}
-	err = yaml.Unmarshal(b, obj)
+	err = yaml.Unmarshal(b, &obj)
 	if err != nil {
 		klog.Error("解析yaml文件错误：", err)
 		return err
