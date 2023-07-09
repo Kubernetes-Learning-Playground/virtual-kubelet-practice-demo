@@ -41,9 +41,8 @@ func main() {
 	//flag.Parse()  // 不要解析，框架会解析
 
 	common.InitClient()
-
+	//
 	remoteCRI := providers.NewRemoteCRIContainer(common.R, common.I)
-
 
 	opt := common.ProviderOption{
 		ProviderName:       "example-provider",
@@ -82,7 +81,6 @@ func main() {
 	logConfig := &logruscli.Config{LogLevel: "info"}
 
 	node, err := cli.New(ctx,
-
 		cli.WithProvider("example-provider", func(cfg provider.InitConfig) (provider.Provider, error) {
 			return providers.NewCriProvider(&opt, remoteCRI), nil
 		}),

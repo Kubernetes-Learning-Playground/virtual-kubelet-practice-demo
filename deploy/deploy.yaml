@@ -22,6 +22,6 @@ spec:
         name: virtual-kubelet
         args:
           # 服务配置项
-          - --provider=example-provider  # 分布式锁名，kubectl命令可以看到
-          - --nodename=edgenode        # 是否启动选主模式
-          - --kubeconfig=./config/config.yaml
+          - --provider=example-provider       #  provider名
+          - --nodename=edgenode               # 边缘节点名
+          - --kubeconfig=./config/config.yaml # 需要连接的kubeconfig配置

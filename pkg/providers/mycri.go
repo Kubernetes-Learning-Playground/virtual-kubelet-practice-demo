@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"k8s.io/apimachinery/pkg/types"
+	criapi "k8s.io/cri-api/pkg/apis/runtime/v1alpha2"
 	"time"
 
 	"github.com/practice/virtual-kubelet-practice/pkg/common"
@@ -17,8 +19,19 @@ import (
 type CriProvider struct {
 	// options 配置
 	options *common.ProviderOption
-	// cri客户端
+	// cri客户端，包含runtimeService imageService
 	remoteCRI *RemoteCRIContainer
+	// provider需要存储该节点下的所有pod
+	podStatus map[types.UID]CRIPod
+}
+
+// CRIPod 单个pod的状态记录
+type CRIPod struct {
+	id string
+	// containers 储存pod中容器组的状态
+	containers map[string]*criapi.ContainerStatus
+	// status pod的状态
+	status *criapi.PodSandboxStatus
 }
 
 // 是否实现下列两种接口，这是vk组件必须实现的两个接口。
@@ -27,8 +40,9 @@ var _ node.PodNotifier = &CriProvider{}
 
 func NewCriProvider(options *common.ProviderOption, criClient *RemoteCRIContainer) *CriProvider {
 	c := &CriProvider{
-		options: options,
+		options:   options,
 		remoteCRI: criClient,
+		// TODO: 需要初始化 map
 	}
 	return c
 }
