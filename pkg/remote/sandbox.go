@@ -100,13 +100,13 @@ func GeneratePodSandboxConfig(ctx context.Context, pod *v1.Pod, logDir string, a
 			Uid:       podUID,
 			Attempt:   attempt,
 		},
-		Labels:       createPodLabels(pod),
+		//Labels:       createPodLabels(pod),
 		Annotations:  pod.Annotations,
 		LogDirectory: logDir,
-		DnsConfig:    createPodDnsConfig(pod),
-		Hostname:     createPodHostname(pod),
-		PortMappings: createPortMappings(pod),
-		Linux:        createPodSandboxLinuxConfig(pod),
+		//DnsConfig:    createPodDnsConfig(pod),
+		//Hostname:     createPodHostname(pod),
+		//PortMappings: createPortMappings(pod),
+		//Linux:        createPodSandboxLinuxConfig(pod),
 	}
 	return config, nil
 }

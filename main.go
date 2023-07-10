@@ -40,8 +40,8 @@ func main() {
 	//flag.StringVar(&operatingSystem, "operatingSystem", "Linux", "virtual-kubelet node os")
 	//flag.Parse()  // 不要解析，框架会解析
 
-	common.InitClient()
-	//
+
+
 	remoteCRI := providers.NewRemoteCRIContainer(common.R, common.I)
 
 	opt := common.ProviderOption{

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: virtual-kubelet-pod-test
+spec:
+  nodeName: mynode    # 调度到此自定义节点上
+  containers:
+    - name: ngx1
+      image: nginx:1.18-alpine
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 80

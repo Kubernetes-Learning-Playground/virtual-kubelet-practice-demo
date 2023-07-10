@@ -3,7 +3,6 @@ package remote
 import (
 	"context"
 	"fmt"
-	"github.com/virtual-kubelet/node-cli/manager"
 	"github.com/virtual-kubelet/virtual-kubelet/errdefs"
 	v1 "k8s.io/api/core/v1"
 	criapi "k8s.io/cri-api/pkg/apis/runtime/v1alpha2"
@@ -91,7 +90,7 @@ func GetContainersForSandbox(ctx context.Context, client criapi.RuntimeServiceCl
 }
 
 // GenerateContainerConfig 由node提供的pod配置，生成CRI需要的容器配置文件
-func GenerateContainerConfig(ctx context.Context, container *v1.Container, pod *v1.Pod, imageRef, podVolRoot string, rm *manager.ResourceManager, attempt uint32) (*criapi.ContainerConfig, error) {
+func GenerateContainerConfig(ctx context.Context, container *v1.Container, pod *v1.Pod, imageRef, podVolRoot string,  attempt uint32) (*criapi.ContainerConfig, error) {
 
 	config := &criapi.ContainerConfig{
 		Metadata: &criapi.ContainerMetadata{
@@ -102,19 +101,19 @@ func GenerateContainerConfig(ctx context.Context, container *v1.Container, pod *
 		Command:     container.Command,
 		Args:        container.Args,
 		WorkingDir:  container.WorkingDir,
-		Envs:        createCtrEnvVars(container.Env),
-		Labels:      createCtrLabels(container, pod),
-		Annotations: createCtrAnnotations(container, pod),
-		Linux:       createCtrLinuxConfig(container, pod),
+		//Envs:        createCtrEnvVars(container.Env),
+		//Labels:      createCtrLabels(container, pod),
+		//Annotations: createCtrAnnotations(container, pod),
+		//Linux:       createCtrLinuxConfig(container, pod),
 		LogPath:     fmt.Sprintf("%s-%d.log", container.Name, attempt),
 		Stdin:       container.Stdin,
 		StdinOnce:   container.StdinOnce,
 		Tty:         container.TTY,
 	}
-	mounts, err := createCtrMounts(ctx, container, pod, podVolRoot, rm)
-	if err != nil {
-		return nil, err
-	}
-	config.Mounts = mounts
+	//mounts, err := createCtrMounts(ctx, container, pod, podVolRoot, rm)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//config.Mounts = mounts
 	return config, nil
 }

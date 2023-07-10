@@ -20,3 +20,33 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
+
+
+# 使用 kubectl apply -f deployment.yaml
+#  [root@VM-0-16-centos test]# kubectl get pods
+#     NAME                                        READY   STATUS             RESTARTS         AGE
+#     busybox1-6884fbf49f-5pcvv                   1/1     Running            0                6m25s
+#     busybox1-6884fbf49f-8fj4b                   1/1     Running            0                6m45s
+#     busybox1-6884fbf49f-bk9vh                   1/1     Running            0                6m19s
+#     busybox1-6884fbf49f-gbq9j                   1/1     Running            0                6m40s
+#     busybox1-6884fbf49f-lbtsc                   1/1     Running            0                6m30s
+#     busybox1-6884fbf49f-lwqrr                   1/1     Running            0                6m50s
+#     busybox1-6884fbf49f-nhtfq                   1/1     Running            0                6m55s
+#     busybox1-6884fbf49f-qkhfh                   1/1     Running            0                7m6s
+#     busybox1-6884fbf49f-t7zm2                   1/1     Running            0                6m35s
+#     busybox1-6884fbf49f-zfgt8                   1/1     Running            0                7m5s
+#     busybox1-6884fbf49f-zmcnv                   1/1     Running            0                7m
+#     critest-5bb8b8dcfc-2btmw                    1/1     Running            0                9m7s
+#     critest-5bb8b8dcfc-6h6td                    1/1     Running            0                8m30s
+#     critest-5bb8b8dcfc-c6kh2                    1/1     Running            0                9m6s
+#     critest-5bb8b8dcfc-hfwh8                    1/1     Running            0                8m56s
+#     critest-5bb8b8dcfc-pwhcr                    1/1     Running            0                8m35s
+#     critest-5bb8b8dcfc-qqr99                    1/1     Running            0                8m41s
+#     critest-5bb8b8dcfc-tkh4z                    1/1     Running            0                8m25s
+#     critest-5bb8b8dcfc-tmrdd                    1/1     Running            0                9m1s
+#     critest-5bb8b8dcfc-vvc4v                    1/1     Running            0                8m46s
+#     critest-5bb8b8dcfc-w6286                    1/1     Running            0                8m51s
+
+# 会有不断创建pod的bug需要解决，如果创建pod，没有此问题
+# 批量删除命令
+# kubectl get pods | grep critest | awk '{print $1}' | xargs kubectl delete pod
