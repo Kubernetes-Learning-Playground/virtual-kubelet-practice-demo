@@ -72,7 +72,6 @@ func NewCRIClient(address string) (*containerd.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return c, nil
 }
 
@@ -92,6 +91,7 @@ func (p *Provider) PullImage(ctx context.Context, imageName string) error {
 	return nil
 }
 
+// CreateContainer 使用containerd接口启动容器
 func (p *Provider) CreateContainer(ctx context.Context, containerName, command string, image containerd.Image) (containerd.Container, error) {
 	var container containerd.Container
 	var err error

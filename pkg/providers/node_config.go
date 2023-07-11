@@ -20,6 +20,9 @@ func nodeDaemonEndpoints(port int) v1.NodeDaemonEndpoints {
 
 // nodeAddresses 获取node 内部IP
 func nodeAddresses(internalIP string) []v1.NodeAddress {
+	if internalIP == "" {
+		internalIP = "127.0.0.1"
+	}
 	return []v1.NodeAddress{
 		{
 			Type:    "InternalIP",

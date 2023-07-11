@@ -17,10 +17,9 @@ func CreateContainer(ctx context.Context, client criapi.RuntimeServiceClient, co
 		SandboxConfig: podConfig,
 	}
 
-	r, err := client.CreateContainer(context.Background(), request)
+	r, err := client.CreateContainer(ctx, request)
 
 	if err != nil {
-
 		return "", err
 	}
 	return r.ContainerId, nil
@@ -38,7 +37,7 @@ func StartContainer(ctx context.Context, client criapi.RuntimeServiceClient, cId
 		ContainerId: cId,
 	}
 
-	_, err := client.StartContainer(context.Background(), request)
+	_, err := client.StartContainer(ctx, request)
 
 	if err != nil {
 
@@ -62,7 +61,7 @@ func GetContainerCRIStatus(ctx context.Context, client criapi.RuntimeServiceClie
 		Verbose:     false,
 	}
 
-	r, err := client.ContainerStatus(context.Background(), request)
+	r, err := client.ContainerStatus(ctx, request)
 
 	if err != nil {
 
@@ -81,7 +80,7 @@ func GetContainersForSandbox(ctx context.Context, client criapi.RuntimeServiceCl
 		Filter: filter,
 	}
 
-	r, err := client.ListContainers(context.Background(), request)
+	r, err := client.ListContainers(ctx, request)
 
 	if err != nil {
 		return nil, err
@@ -90,29 +89,29 @@ func GetContainersForSandbox(ctx context.Context, client criapi.RuntimeServiceCl
 }
 
 // GenerateContainerConfig 由node提供的pod配置，生成CRI需要的容器配置文件
-func GenerateContainerConfig(ctx context.Context, container *v1.Container, pod *v1.Pod, imageRef, podVolRoot string,  attempt uint32) (*criapi.ContainerConfig, error) {
+func GenerateContainerConfig(ctx context.Context, container *v1.Container, pod *v1.Pod, imageRef, podVolRoot string, attempt uint32) (*criapi.ContainerConfig, error) {
 
 	config := &criapi.ContainerConfig{
 		Metadata: &criapi.ContainerMetadata{
 			Name:    container.Name,
 			Attempt: attempt,
 		},
-		Image:       &criapi.ImageSpec{Image: imageRef},
-		Command:     container.Command,
-		Args:        container.Args,
-		WorkingDir:  container.WorkingDir,
+		Image:      &criapi.ImageSpec{Image: imageRef},
+		Command:    container.Command,
+		Args:       container.Args,
+		WorkingDir: container.WorkingDir,
 		//Envs:        createCtrEnvVars(container.Env),
 		//Labels:      createCtrLabels(container, pod),
 		//Annotations: createCtrAnnotations(container, pod),
 		//Linux:       createCtrLinuxConfig(container, pod),
-		LogPath:     fmt.Sprintf("%s-%d.log", container.Name, attempt),
-		Stdin:       container.Stdin,
-		StdinOnce:   container.StdinOnce,
-		Tty:         container.TTY,
+		LogPath:   fmt.Sprintf("%s-%d.log", container.Name, attempt),
+		Stdin:     container.Stdin,
+		StdinOnce: container.StdinOnce,
+		Tty:       container.TTY,
 	}
 	//mounts, err := createCtrMounts(ctx, container, pod, podVolRoot, rm)
 	//if err != nil {
-	//	return nil, err
+	// return nil, err
 	//}
 	//config.Mounts = mounts
 	return config, nil

@@ -23,5 +23,6 @@ spec:
         args:
           # 服务配置项
           - --provider=example-provider       #  provider名
-          - --nodename=edgenode               # 边缘节点名
+          - --nodename=mynode                 # 边缘节点名
           - --kubeconfig=./config/config.yaml # 需要连接的kubeconfig配置
+# 容器化部署会报错

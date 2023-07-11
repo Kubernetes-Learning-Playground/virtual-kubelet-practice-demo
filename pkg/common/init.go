@@ -2,7 +2,6 @@ package common
 
 import (
 	"context"
-	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"k8s.io/cri-api/pkg/apis/runtime/v1alpha2"
@@ -10,6 +9,7 @@ import (
 	"time"
 )
 
+// 默认的CRI文件路径
 const CriAddr = "unix:///run/containerd/containerd.sock"
 
 var (
@@ -18,6 +18,7 @@ var (
 )
 
 func init() {
+	// 初始化
 	initClient()
 	R = NewRuntimeService()
 	I = NewImageService()
@@ -39,7 +40,6 @@ func initClient() {
 	grpcOpts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
-	fmt.Println("aaaaaaaaa")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 	defer cancel()
 	conn, err := grpc.DialContext(ctx, CriAddr, grpcOpts...)

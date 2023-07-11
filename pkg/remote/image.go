@@ -16,7 +16,7 @@ func PullImage(ctx context.Context, client criapi.ImageServiceClient, image stri
 	}
 
 	// 发送请求
-	r, err := client.PullImage(context.Background(), request)
+	r, err := client.PullImage(ctx, request)
 	if err != nil {
 		return "", err
 	}

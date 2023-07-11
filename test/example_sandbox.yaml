@@ -7,3 +7,5 @@ port_mappings:
      container_port: 80
 
 # 沙箱配置
+# 理论上可以构造出sandbox.yaml container.yaml 并解析调用CRI 容器运行时客户端创建容器
+# 不过一般不会这样使用，会基于k8s的pod对象构建出containerd所需的数据格式，并请求
