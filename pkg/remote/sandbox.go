@@ -14,7 +14,7 @@ func RunPodSandbox(ctx context.Context, client criapi.RuntimeServiceClient, conf
 	request := &criapi.RunPodSandboxRequest{Config: config}
 
 	// 发送
-	r, err := client.RunPodSandbox(context.Background(), request)
+	r, err := client.RunPodSandbox(ctx, request)
 	if err != nil {
 		return "", err
 	}
@@ -28,7 +28,7 @@ func StopPodSandbox(ctx context.Context, client criapi.RuntimeServiceClient, id 
 		return err
 	}
 	request := &criapi.StopPodSandboxRequest{PodSandboxId: id}
-	_, err := client.StopPodSandbox(context.Background(), request)
+	_, err := client.StopPodSandbox(ctx, request)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func RemovePodSandbox(ctx context.Context, client criapi.RuntimeServiceClient, i
 	}
 	request := &criapi.RemovePodSandboxRequest{PodSandboxId: id}
 
-	_, err := client.RemovePodSandbox(context.Background(), request)
+	_, err := client.RemovePodSandbox(ctx, request)
 
 	if err != nil {
 		return err
@@ -61,7 +61,7 @@ func GetPodSandboxes(ctx context.Context, client criapi.RuntimeServiceClient) ([
 		Filter: filter,
 	}
 
-	r, err := client.ListPodSandbox(context.Background(), request)
+	r, err := client.ListPodSandbox(ctx, request)
 
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ func GetPodSandboxStatus(ctx context.Context, client criapi.RuntimeServiceClient
 		Verbose:      false,
 	}
 
-	r, err := client.PodSandboxStatus(context.Background(), request)
+	r, err := client.PodSandboxStatus(ctx, request)
 	if err != nil {
 		return nil, err
 	}

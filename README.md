@@ -107,7 +107,12 @@ INFO[0000] Event(v1.ObjectReference{Kind:"Pod", Namespace:"default", Name:"crite
 critest-857b8c5576-d5dph               1/1     Running       0                27s
 ```
 
+#### 二进制部署
+```bash
+[root@VM-0-8-centos ~]# go build -a -o virtual-kubelet main.go
+[root@VM-0-8-centos ~]# ./virtual-kubelet --provider=example-provider --nodename=mynode --kubeconfig=./config/config.yaml
+```
+
 RoadMap:
 1. 对接etcd or redis，让在边缘节点的请求能得到缓存记录
-2. 长期来看，需要对接containerd 或 docker 来真正实现创建容器与pod的逻辑(不会，太难了)
-3. 参考阿里 腾讯 华为的provider 加上一些自己的业务逻辑。
+2. 参考阿里 腾讯 华为的provider 加上一些自己的业务逻辑。

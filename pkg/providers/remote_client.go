@@ -13,4 +13,3 @@ type RemoteCRIContainer struct {
 func NewRemoteCRIContainer(runtimeService v1alpha2.RuntimeServiceClient, imageService v1alpha2.ImageServiceClient) *RemoteCRIContainer {
 	return &RemoteCRIContainer{RuntimeService: runtimeService, ImageService: imageService}
 }
-
