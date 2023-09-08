@@ -10,11 +10,13 @@ import (
 // PodManager pod管理器，用于存储node中的pod与其容器组状态
 type PodManager struct {
 	podStatus map[types.UID]PodStatus
+	samplePodStatus  map[types.UID]PodStatus
 }
 
 func NewPodManager() *PodManager {
 	return &PodManager{
 		podStatus: map[types.UID]PodStatus{},
+		samplePodStatus: map[types.UID]PodStatus{},
 	}
 }
 

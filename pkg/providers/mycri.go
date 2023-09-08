@@ -107,7 +107,7 @@ func (c *CriProvider) checkPodStatusLoop(ctx context.Context) {
 
 // notifyPodStatuses 获取pod，并通知node节点上报
 func (c *CriProvider) notifyPodStatuses(ctx context.Context) error {
-	pods, err := c.GetPods(ctx)
+	pods, err := c.getPods(ctx)
 	if err != nil {
 		klog.Error("get pods err: ", err)
 		return err
@@ -267,12 +267,23 @@ func (c *CriProvider) getPods(ctx context.Context) ([]*v1.Pod, error) {
 	for _, ps := range c.PodManager.podStatus {
 		pods = append(pods, createPodSpecFromCRI(&ps, c.nodeName))
 	}
+	// 生成k8s中的pod对象
+	for _, ps := range c.PodManager.samplePodStatus {
+		pods = append(pods, createPodSpecFromCRI(&ps, c.nodeName))
+	}
 	return pods, nil
 }
 
 // findPodByName 从内存中获取pod状态
 func (c *CriProvider) findPodByName(namespace, name string) *PodStatus {
 	var found *PodStatus
+
+	for _, pod := range c.PodManager.samplePodStatus {
+		if pod.status.Metadata.Name == name && pod.status.Metadata.Namespace == namespace {
+			found = &pod
+			break
+		}
+	}
 
 	for _, pod := range c.PodManager.getPodStatus() {
 		if pod.status.Metadata.Name == name && pod.status.Metadata.Namespace == namespace {

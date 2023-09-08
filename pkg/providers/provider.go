@@ -13,9 +13,12 @@ import (
 func (c *CriProvider) CreatePod(ctx context.Context, pod *v1.Pod) error {
 	klog.Info("接收到来自k8s-apiserver的创建pod请求。")
 	klog.Info("在此节点上，可以自定义加入业务逻辑。ex: 放入redis or etcd 或是放入数据库等")
-	err := c.createPod(ctx, pod)
+	// 使用annotation区分不同pod功能
+	if pod.Annotations != nil && pod.Annotations["type"] == "bash" {
+		return c.createSamplePod(ctx, pod)
+	}
 
-	return err
+	return c.createPod(ctx, pod)
 }
 
 // UpdatePod 更新pod
@@ -27,8 +30,10 @@ func (c *CriProvider) UpdatePod(ctx context.Context, pod *v1.Pod) error {
 // DeletePod 删除pod
 func (c *CriProvider) DeletePod(ctx context.Context, pod *v1.Pod) error {
 	klog.Info("pod被删除，名称是", pod.Name)
-	err := c.deletePod(context.Background(), pod)
-	return err
+	if pod.Annotations != nil && pod.Annotations["type"] == "bash" {
+		return c.deleteSamplePod(ctx, pod)
+	}
+	return c.deletePod(ctx, pod)
 }
 
 // GetPod 获取pod

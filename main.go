@@ -21,6 +21,9 @@ const (
 	providerName = "example-provider"
 )
 
+// 启动命令
+// go run main.go --provider example-provider --kubeconfig ./config/config.yaml --nodename mynode
+
 func main() {
 
 	remoteCRI := providers.NewRemoteCRIContainer(common.R, common.I)

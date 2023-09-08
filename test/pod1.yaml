@@ -1,0 +1,17 @@
+# 测试使用，添加annotations["type"] = bash ，增加执行bash，不执行容器的功能
+apiVersion: v1
+kind: Pod
+metadata:
+  name: virtual-kubelet-pod-test-bash
+  annotations:
+    type: "bash"
+spec:
+  nodeName: mynode    # 调度到此自定义节点上
+  containers:
+    - name: ngx1
+      image: nginx:1.18-alpine
+      command: [ "/bin/sh" ]
+      args: [ "-c", "echo test-test; sleep 5; exit 0" ]
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 80

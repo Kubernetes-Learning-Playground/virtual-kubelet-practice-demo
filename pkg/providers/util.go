@@ -36,7 +36,7 @@ func createPodSpecFromCRI(p *PodStatus, nodeName string) *v1.Pod {
 	return &podSpec
 }
 
-// createContainerSpecsFromCRI 由CRI配置创建出container对象
+// createContainerSpecsFromCRI 由CRI配置创建出Container与ContainerStatus
 func createContainerSpecsFromCRI(containerMap map[string]*criapi.ContainerStatus) ([]v1.Container, []v1.ContainerStatus) {
 	containers := make([]v1.Container, 0, len(containerMap))
 	containerStatuses := make([]v1.ContainerStatus, 0, len(containerMap))
@@ -44,7 +44,7 @@ func createContainerSpecsFromCRI(containerMap map[string]*criapi.ContainerStatus
 		// TODO: Fill out more fields
 		container := v1.Container{
 			Name:  c.Metadata.Name,
-			Image: c.Image.Image,
+			Image: handleImage(c),
 
 			//Command:    Command is buried in the Info JSON,
 		}
@@ -52,8 +52,8 @@ func createContainerSpecsFromCRI(containerMap map[string]*criapi.ContainerStatus
 		// TODO: Fill out more fields
 		containerStatus := v1.ContainerStatus{
 			Name:        c.Metadata.Name,
-			Image:       c.Image.Image,
-			ImageID:     c.ImageRef,
+			Image:       handleImage(c),
+			ImageID:     handleImageRef(c),
 			ContainerID: c.Id,
 			Ready:       c.State == criapi.ContainerState_CONTAINER_RUNNING,
 			State:       *createContainerStateFromCRI(c.State, c),
@@ -66,6 +66,7 @@ func createContainerSpecsFromCRI(containerMap map[string]*criapi.ContainerStatus
 	return containers, containerStatuses
 }
 
+// createContainerStateFromCRI 转换为ContainerState
 func createContainerStateFromCRI(state criapi.ContainerState, status *criapi.ContainerStatus) *v1.ContainerState {
 	var result *v1.ContainerState
 	switch state {
@@ -102,7 +103,6 @@ func createContainerStateFromCRI(state criapi.ContainerState, status *criapi.Con
 func createPodStatusFromCRI(p *PodStatus) *v1.PodStatus {
 	_, cStatuses := createContainerSpecsFromCRI(p.containers)
 
-	// TODO: How to determine PodSucceeded and PodFailed?
 	phase := v1.PodPending
 	if p.status.State == criapi.PodSandboxState_SANDBOX_READY {
 		phase = v1.PodRunning
@@ -114,8 +114,29 @@ func createPodStatusFromCRI(p *PodStatus) *v1.PodStatus {
 		Message:           "",
 		Reason:            "",
 		HostIP:            "",
-		PodIP:             p.status.Network.Ip,
+		PodIP:             handleNetworkIp(p),
 		StartTime:         &startTime,
 		ContainerStatuses: cStatuses,
 	}
+}
+
+func handleNetworkIp(pp *PodStatus) (string) {
+	if pp.status.Network == nil {
+		return ""
+	}
+	return pp.status.Network.Ip
+}
+
+func handleImage(cc *criapi.ContainerStatus) string {
+	if cc.Image == nil {
+		return ""
+	}
+	return cc.Image.GetImage()
+}
+
+func handleImageRef(cc *criapi.ContainerStatus) string {
+	if cc.Image == nil {
+		return ""
+	}
+	return cc.GetImageRef()
 }
