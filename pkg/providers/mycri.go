@@ -38,7 +38,9 @@ type CriProvider struct {
 	// nodeName 节点名称，初始化时必须指定
 	nodeName string
 	// checkPeriod 检查定时周期
-	checkPeriod  int64
+	checkPeriod int64
+	notifyC  chan struct{}
+	// 上报的回调方法，主要把本节点中的pod status放入工作队列
 	notifyStatus func(*v1.Pod)
 
 	// 模拟实现，
@@ -59,6 +61,7 @@ func NewCriProvider(options *common.ProviderConfig, criClient *RemoteCRIContaine
 		podVolRoot: PodVolRoot,
 		PodManager: NewPodManager(),
 		nodeName:   options.NodeName,
+		notifyC: make(chan struct{}),
 	}
 	// 初始化时先创建目录
 	err := os.MkdirAll(c.podLogRoot, PodLogRootPerms)
@@ -77,6 +80,27 @@ func NewCriProvider(options *common.ProviderConfig, criClient *RemoteCRIContaine
 func (c *CriProvider) NotifyPods(ctx context.Context, notifyStatus func(*v1.Pod)) {
 	c.notifyStatus = notifyStatus
 	go c.checkPodStatusLoop(ctx)
+	go c.checkSamplePodStatusLoop()
+}
+
+// FIXME: 暂时使用此方式 通知
+func (c *CriProvider) checkSamplePodStatusLoop() {
+	for {
+		select {
+		case <-c.notifyC:
+			var pods []*v1.Pod
+
+			for _, ps := range c.PodManager.samplePodStatus {
+				pods = append(pods, createPodSpecFromCRI(&ps, c.nodeName))
+			}
+
+			for _, pod := range pods {
+				c.notifyStatus(pod)
+			}
+		}
+	}
+
+
 }
 
 const defaultCheckPeriod = 5
@@ -278,7 +302,7 @@ func (c *CriProvider) getPods(ctx context.Context) ([]*v1.Pod, error) {
 func (c *CriProvider) findPodByName(namespace, name string) *PodStatus {
 	var found *PodStatus
 
-	for _, pod := range c.PodManager.samplePodStatus {
+	for _, pod := range c.PodManager.getSamplePodStatus() {
 		if pod.status.Metadata.Name == name && pod.status.Metadata.Namespace == namespace {
 			found = &pod
 			break

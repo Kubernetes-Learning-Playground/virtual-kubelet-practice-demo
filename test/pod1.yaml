@@ -10,8 +10,15 @@ spec:
   containers:
     - name: ngx1
       image: nginx:1.18-alpine
+      # 仅执行如下命令，与镜像字段无关
       command: [ "/bin/sh" ]
-      args: [ "-c", "echo test-test; sleep 5; exit 0" ]
-      imagePullPolicy: IfNotPresent
+      args: [ "-c", "echo test-testaaaa; sleep 30; exit 0" ]
+      ports:
+        - containerPort: 80
+    - name: ngx2
+      image: nginx:1.18-alpine
+      # 仅执行如下命令，与镜像字段无关
+      command: [ "/bin/sh" ]
+      args: [ "-c", "echo test-testaaaa; sleep 20; exit 0" ]
       ports:
         - containerPort: 80

@@ -1,9 +1,6 @@
 ## 对virtual-kubelet的初探demo
 项目背景：目前"边缘云"与"混合云"的架构概念逐渐成为未来云计算的主要部署型态与方向，因此相关的技术也随之兴起。Virtual-Kubelet便是其中之一。
-Virtual-Kubelet是基于Kubelet的典型特性实现，向上伪装成Kubelet，从而模拟出Node对象，对接Kubernetes的原生资源对象；向下提供API，可对接其他资源管理平台提供的Provider。
-
-本项目基于Virtual-Kubelet的基础上，运行简易的自定义kubelet，并实现上报pod信息等功能。
-(由于是初探，功能完全不完善，没有任何业务逻辑，仅仅是启动项目而已，供自己学习所用)
+Virtual-Kubelet是基于Kubelet的典型特性实现，向上伪装成Kubelet，从而模拟出Node对象，对接Kubernetes的原生资源对象；向下提供API，可对接其他资源管理平台(CRI、公有云资源、自定义扩展等)提供的Provider。
 
 virtual-kubelet项目图提供 [virtual-kubelet项目地址](https://github.com/virtual-kubelet/virtual-kubelet)
 ![](https://github.com/googs1025/virtual-kubelet-practice-demo/blob/main/image/diagram.svg?raw=true)

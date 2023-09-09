@@ -1,11 +1,11 @@
 package providers
 
 import (
+	"bytes"
 	"context"
 	"github.com/virtual-kubelet/virtual-kubelet/errdefs"
 	v1 "k8s.io/api/core/v1"
 	criapi "k8s.io/cri-api/pkg/apis/runtime/v1alpha2"
-	"os"
 	"os/exec"
 	"time"
 )
@@ -19,10 +19,11 @@ type ContainerCmd struct {
 }
 
 // Run 执行命令
-func (cc *ContainerCmd) Run() {
-	// 标准输出
-	cc.Cmd.Stdout = os.Stdout
-	cc.Cmd.Stderr = os.Stderr
+func (cc *ContainerCmd) Run() (string, string, error) {
+	// 设置输出
+	var stdout, stderr bytes.Buffer
+	cc.Cmd.Stdout = &stdout
+	cc.Cmd.Stderr = &stderr
 	// 执行cmd
 	err := cc.Cmd.Run()
 	if err != nil {
@@ -34,9 +35,11 @@ func (cc *ContainerCmd) Run() {
 			cc.ExecError = err
 		}
 	}
+	return string(stdout.Bytes()), string(stderr.Bytes()),err
 }
 
 func (c *CriProvider) createSamplePod(_ context.Context, pod *v1.Pod) error {
+	// 1. 封装为ContainerCmd对象
 	cmds := make([]*ContainerCmd, 0)
 	for _, c := range pod.Spec.Containers {
 		if len(c.Command) == 0 {
@@ -49,43 +52,68 @@ func (c *CriProvider) createSamplePod(_ context.Context, pod *v1.Pod) error {
 		args = append(args, c.Args...)
 		cmd := exec.Command(c.Command[0], args...)
 		cmds = append(cmds, &ContainerCmd{
-			Cmd: cmd,
+			Cmd:           cmd,
 			ContainerName: c.Name,
 		})
 
 	}
 
+	// 2. 创建pod状态
 	c.PodManager.samplePodStatus[pod.UID] = PodStatus{
 		id: string(pod.UID),
 		status: &criapi.PodSandboxStatus{
 			Metadata: &criapi.PodSandboxMetadata{
-				Name: pod.Name,
+				Name:      pod.Name,
 				Namespace: pod.Namespace,
-				Uid: string(pod.UID),
+				Uid:       string(pod.UID),
 			},
-			Id: string(pod.UID),
-			State: criapi.PodSandboxState_SANDBOX_NOTREADY,
+			Id:        string(pod.UID),
+			State:     criapi.PodSandboxState_SANDBOX_READY,
 			CreatedAt: time.Now().Unix(),
 		},
 		containers: map[string]*criapi.ContainerStatus{},
 	}
+	// 通知去更新状态
+	c.notifyC <- struct{}{}
 
 	for _, cmd := range cmds {
 		c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName] = &criapi.ContainerStatus{
 			Metadata: &criapi.ContainerMetadata{
 				Name: cmd.ContainerName,
 			},
-			Id: string(pod.UID) + cmd.ContainerName,
+			Id:        string(pod.UID) + cmd.ContainerName,
 			CreatedAt: time.Now().Unix(),
 			StartedAt: time.Now().Add(time.Second * 3).Unix(),
-			State: criapi.ContainerState_CONTAINER_CREATED,
+			State:     criapi.ContainerState_CONTAINER_CREATED,
+			Message: "Creating",
 		}
-		cmd.Run()
+
+		c.notifyC <- struct{}{}
+
+		// 修改容器状态为 running
 		c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName].State = criapi.ContainerState_CONTAINER_RUNNING
-		cmd.Cmd.Output()
-		c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName].State = criapi.ContainerState_CONTAINER_EXITED
-		c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName].Reason = "Completed"
-		c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName].ExitCode = 0
+		c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName].Message = "Running"
+		c.notifyC <- struct{}{}
+		// 执行命令
+		cmd := cmd
+		go func() {
+			outMessage, errMessage, err := cmd.Run()
+			// 执行完毕，修改对应的状态
+			// FIXME: 可封装为一个方法
+			if err != nil {
+				c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName].State = criapi.ContainerState_CONTAINER_EXITED
+				c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName].Reason = "Error"
+				c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName].Message = errMessage
+				c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName].ExitCode = -9999
+			} else {
+				c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName].State = criapi.ContainerState_CONTAINER_EXITED
+				c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName].Reason = "Completed"
+				c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName].Message = outMessage
+				c.PodManager.samplePodStatus[pod.UID].containers[cmd.ContainerName].ExitCode = 0
+			}
+			c.notifyC <- struct{}{}
+		}()
+
 
 	}
 
@@ -104,6 +132,7 @@ func (c *CriProvider) deleteSamplePod(_ context.Context, pod *v1.Pod) error {
 	for _, ss := range ps.containers {
 		ss.State = criapi.ContainerState_CONTAINER_EXITED
 	}
+	delete(c.PodManager.samplePodStatus, pod.UID)
 	c.notifyStatus(pod)
 	return nil
 }

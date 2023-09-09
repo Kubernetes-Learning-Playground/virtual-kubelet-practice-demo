@@ -24,6 +24,10 @@ func (c *CriProvider) CreatePod(ctx context.Context, pod *v1.Pod) error {
 // UpdatePod 更新pod
 func (c *CriProvider) UpdatePod(ctx context.Context, pod *v1.Pod) error {
 	klog.Info("更新pod请求。")
+	// FIXME: 可能会有些问题，使用kubectl apply xxx 相当于create创建新pod
+	if pod.Annotations != nil && pod.Annotations["type"] == "bash" {
+		return c.createSamplePod(ctx, pod)
+	}
 	return nil
 }
 

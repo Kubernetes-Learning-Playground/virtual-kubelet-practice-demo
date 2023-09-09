@@ -89,8 +89,9 @@ func GetContainersForSandbox(ctx context.Context, client criapi.RuntimeServiceCl
 }
 
 // GenerateContainerConfig 由node提供的pod配置，生成CRI需要的容器配置文件
-func GenerateContainerConfig(ctx context.Context, container *v1.Container, pod *v1.Pod, imageRef, podVolRoot string, attempt uint32) (*criapi.ContainerConfig, error) {
+func GenerateContainerConfig(_ context.Context, container *v1.Container, pod *v1.Pod, imageRef, podVolRoot string, attempt uint32) (*criapi.ContainerConfig, error) {
 
+	// FIXME: 有些容器特行目前没有支持
 	config := &criapi.ContainerConfig{
 		Metadata: &criapi.ContainerMetadata{
 			Name:    container.Name,
