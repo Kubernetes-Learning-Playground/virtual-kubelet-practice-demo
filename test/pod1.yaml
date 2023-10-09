@@ -1,8 +1,9 @@
-# 测试使用，添加annotations["type"] = bash ，增加执行bash，不执行容器的功能
+# 测试使用，添加 annotations["type"] = bash ，增加执行 bash，不执行容器的功能
 apiVersion: v1
 kind: Pod
 metadata:
   name: virtual-kubelet-pod-test-bash
+  # 注意：此添加 annotations["type"] = bash 字段
   annotations:
     type: "bash"
 spec:

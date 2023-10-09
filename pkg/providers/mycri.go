@@ -28,7 +28,7 @@ type CriProvider struct {
 	// options 配置
 	options *common.ProviderConfig
 	// cri客户端，包含runtimeService imageService
-	remoteCRI *RemoteCRIContainer
+	remoteCRI *remote.CRIContainer
 	// PodManager 管理pods状态管理
 	PodManager *PodManager
 	// podLogRoot 存放容器日志目录
@@ -39,7 +39,7 @@ type CriProvider struct {
 	nodeName string
 	// checkPeriod 检查定时周期
 	checkPeriod int64
-	notifyC  chan struct{}
+	notifyC     chan struct{}
 	// 上报的回调方法，主要把本节点中的pod status放入工作队列
 	notifyStatus func(*v1.Pod)
 
@@ -52,7 +52,7 @@ type CriProvider struct {
 var _ node.PodLifecycleHandler = &CriProvider{}
 var _ node.PodNotifier = &CriProvider{}
 
-func NewCriProvider(options *common.ProviderConfig, criClient *RemoteCRIContainer) *CriProvider {
+func NewCriProvider(options *common.ProviderConfig, criClient *remote.CRIContainer) *CriProvider {
 
 	c := &CriProvider{
 		options:    options,
@@ -61,7 +61,7 @@ func NewCriProvider(options *common.ProviderConfig, criClient *RemoteCRIContaine
 		podVolRoot: PodVolRoot,
 		PodManager: NewPodManager(),
 		nodeName:   options.NodeName,
-		notifyC: make(chan struct{}),
+		notifyC:    make(chan struct{}),
 	}
 	// 初始化时先创建目录
 	err := os.MkdirAll(c.podLogRoot, PodLogRootPerms)
@@ -99,7 +99,6 @@ func (c *CriProvider) checkSamplePodStatusLoop() {
 			}
 		}
 	}
-
 
 }
 
@@ -227,11 +226,11 @@ func (c *CriProvider) createPod(ctx context.Context, pod *v1.Pod) error {
 
 // deletePod 删除pod业务逻辑
 func (c *CriProvider) deletePod(ctx context.Context, pod *v1.Pod) error {
-	klog.Errorf("receive DeletePod %q", pod.Name)
+	klog.Infof("receive DeletePod %s", pod.Name)
 	// 刷新node中的pod状态
 	err := c.refreshNodeState(ctx)
 	if err != nil {
-		klog.Error("refreshNodeState err: ", err)
+		klog.Errorf("refreshNodeState err: %s", err)
 		return err
 	}
 

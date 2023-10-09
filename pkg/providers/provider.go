@@ -11,9 +11,9 @@ import (
 
 // CreatePod 创建pod
 func (c *CriProvider) CreatePod(ctx context.Context, pod *v1.Pod) error {
-	klog.Info("接收到来自k8s-apiserver的创建pod请求。")
-	klog.Info("在此节点上，可以自定义加入业务逻辑。ex: 放入redis or etcd 或是放入数据库等")
-	// 使用annotation区分不同pod功能
+	klog.Info("接收到来自 k8s-apiserver 的创建 pod 请求")
+	klog.Info("在此节点上，可以自定义加入业务逻辑。ex: 放入 redis or etcd 或是放入数据库等")
+	// 使用 annotation 区分不同 pod 功能
 	if pod.Annotations != nil && pod.Annotations["type"] == "bash" {
 		return c.createSamplePod(ctx, pod)
 	}
@@ -23,7 +23,7 @@ func (c *CriProvider) CreatePod(ctx context.Context, pod *v1.Pod) error {
 
 // UpdatePod 更新pod
 func (c *CriProvider) UpdatePod(ctx context.Context, pod *v1.Pod) error {
-	klog.Info("更新pod请求。")
+	klog.Info("更新pod请求")
 	// FIXME: 可能会有些问题，使用kubectl apply xxx 相当于create创建新pod
 	if pod.Annotations != nil && pod.Annotations["type"] == "bash" {
 		return c.createSamplePod(ctx, pod)
@@ -33,7 +33,7 @@ func (c *CriProvider) UpdatePod(ctx context.Context, pod *v1.Pod) error {
 
 // DeletePod 删除pod
 func (c *CriProvider) DeletePod(ctx context.Context, pod *v1.Pod) error {
-	klog.Info("pod被删除，名称是", pod.Name)
+	klog.Info("pod 被删除，名称是: ", pod.Name)
 	if pod.Annotations != nil && pod.Annotations["type"] == "bash" {
 		return c.deleteSamplePod(ctx, pod)
 	}

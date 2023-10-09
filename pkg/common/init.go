@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// 默认的CRI文件路径
+// CriAddr 默认的CRI文件路径
 const CriAddr = "unix:///run/containerd/containerd.sock"
 
 var (

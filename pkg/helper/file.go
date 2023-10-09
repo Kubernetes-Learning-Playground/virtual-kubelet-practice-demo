@@ -8,8 +8,8 @@ import (
 	"k8s.io/klog"
 )
 
-// YamlFile2Struct 读取文件内容 且反序列为struct
-func YamlFile2Struct(path string, obj interface{}) error {
+// YamlFileToStruct 读取文件内容 且反序列为对象
+func YamlFileToStruct(path string, obj interface{}) error {
 	b, err := GetFileContent(path)
 	if err != nil {
 		klog.Error("开启文件错误：", err)

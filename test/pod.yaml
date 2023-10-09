@@ -5,6 +5,7 @@ metadata:
 spec:
   nodeName: mynode    # 调度到此自定义节点上
   containers:
+    # 可启动 nginx:1.18-alpine 容器，本质使用 containerd 容器运行时执行
     - name: ngx1
       image: nginx:1.18-alpine
       imagePullPolicy: IfNotPresent

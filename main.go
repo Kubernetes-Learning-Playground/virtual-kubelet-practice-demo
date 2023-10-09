@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/practice/virtual-kubelet-practice/pkg/common"
 	"github.com/practice/virtual-kubelet-practice/pkg/providers"
+	"github.com/practice/virtual-kubelet-practice/pkg/remote"
 	"github.com/sirupsen/logrus"
 	cli "github.com/virtual-kubelet/node-cli"
 	//"github.com/virtual-kubelet/node-cli/opts"
@@ -11,9 +12,6 @@ import (
 	"github.com/virtual-kubelet/node-cli/provider"
 	"github.com/virtual-kubelet/virtual-kubelet/log"
 	logruslogger "github.com/virtual-kubelet/virtual-kubelet/log/logrus"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 const (
@@ -26,15 +24,7 @@ const (
 
 func main() {
 
-	remoteCRI := providers.NewRemoteCRIContainer(common.R, common.I)
-
-	_, cancel := context.WithCancel(context.Background())
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		<-sig
-		cancel()
-	}()
+	remoteCRI := remote.NewRemoteCRIContainer(common.R, common.I)
 
 	ctx := cli.ContextWithCancelOnSignal(context.Background())
 	logger := logrus.StandardLogger()
